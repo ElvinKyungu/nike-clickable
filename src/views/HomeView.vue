@@ -14,7 +14,6 @@ import shoe2 from '@/assets/shoe2.png'
 import shoe3 from '@/assets/shoe3.png'
 import shoe4 from '@/assets/shoe4.png'
 
-// Stockage des images dans un tableau
 const images = [shoe1, shoe2, shoe3, shoe4]
 
 
@@ -23,13 +22,11 @@ const showCard = ref(true)
 const showSecondCard = ref(false)
 const currentImageIndex = ref(0)
 
-// Gestion du clic sur le bouton "Buy now"
 const handleBuyNow = () => {
   showCard.value = false
   showSecondCard.value = true
 }
 
-// Gestion du clic en dehors de la deuxième carte
 const handleClickOutside = () => {
   gsap.to('.second-card', {
     y: '100%',
@@ -43,7 +40,6 @@ const handleClickOutside = () => {
   })
 }
 
-// Animation d'entrée de la deuxième carte
 const animateSecondCard = () => {
   nextTick(() => {
     gsap.fromTo(
@@ -54,12 +50,10 @@ const animateSecondCard = () => {
   })
 }
 
-// Watcher pour l'affichage de la deuxième carte
 watch(showSecondCard, (newVal) => {
   if (newVal) animateSecondCard()
 })
 
-// Changement d'image avec animation
 const changeImage = (direction: 'left' | 'right') => {
   const totalImages = images.length
   const nextIndex = direction === 'right'
