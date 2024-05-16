@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import IconStars from '@/components/icons/IconStars.vue'
 import IconStarsTransparent from '@/components/icons/IconStarsTransparent.vue'
 import IconLeft from '@/components/icons/IconLeft.vue'
@@ -8,7 +8,6 @@ import IconRight from '@/components/icons/IconRight.vue'
 import Input from '@/components/Input.vue'
 import gsap from 'gsap'
 
-// Importation des images
 import shoe1 from '@/assets/shoe1.png'
 import shoe2 from '@/assets/shoe2.png'
 import shoe3 from '@/assets/shoe3.png'
