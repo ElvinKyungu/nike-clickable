@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer components{
+  .input{
+    @apply absolute text-2xl px-4 text-center 
+    w-full h-full outline-none bg-[#f4f3f4] rounded-lg border border-gray-200
+  }
+}

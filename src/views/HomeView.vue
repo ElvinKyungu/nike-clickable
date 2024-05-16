@@ -1,8 +1,177 @@
 <script setup lang="ts">
+import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import IconStars from '@/components/icons/IconStars.vue'
+import IconStarsTransparent from '@/components/icons/IconStarsTransparent.vue'
+import IconLeft from '@/components/icons/IconLeft.vue'
+import IconDown from '@/components/icons/IconDown.vue'
+import IconRight from '@/components/icons/IconRight.vue'
+import Input from '@/components/Input.vue'
+import gsap from 'gsap'
+
+// Importation des images
+import shoe1 from '@/assets/shoe1.png'
+import shoe2 from '@/assets/shoe2.png'
+import shoe3 from '@/assets/shoe3.png'
+import shoe4 from '@/assets/shoe4.png'
+
+// Stockage des images dans un tableau
+const images = [shoe1, shoe2, shoe3, shoe4]
+
+
+const showDetails = ref(false)
+const showCard = ref(true)
+const showSecondCard = ref(false)
+const currentImageIndex = ref(0)
+
+// Gestion du clic sur le bouton "Buy now"
+const handleBuyNow = () => {
+  showCard.value = false
+  showSecondCard.value = true
+}
+
+// Gestion du clic en dehors de la deuxième carte
+const handleClickOutside = () => {
+  gsap.to('.second-card', {
+    y: '100%',
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power3.in',
+    onComplete: () => {
+      showSecondCard.value = false
+      showCard.value = true
+    }
+  })
+}
+
+// Animation d'entrée de la deuxième carte
+const animateSecondCard = () => {
+  nextTick(() => {
+    gsap.fromTo(
+      '.second-card',
+      { y: '100%', opacity: 0 },
+      { y: '0%', opacity: 1, duration: 0.5, ease: 'power3.out' }
+    )
+  })
+}
+
+// Watcher pour l'affichage de la deuxième carte
+watch(showSecondCard, (newVal) => {
+  if (newVal) animateSecondCard()
+})
+
+// Changement d'image avec animation
+const changeImage = (direction: 'left' | 'right') => {
+  const totalImages = images.length
+  const nextIndex = direction === 'right'
+    ? (currentImageIndex.value + 1) % totalImages
+    : (currentImageIndex.value - 1 + totalImages) % totalImages
+
+  gsap.to('.shoe-image', {
+    x: direction === 'right' ? '-100%' : '100%',
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power3.in',
+    onComplete: () => {
+      currentImageIndex.value = nextIndex
+      gsap.fromTo(
+        '.shoe-image',
+        { x: direction === 'right' ? '100%' : '-100%', opacity: 0 },
+        { x: '0%', opacity: 1, duration: 0.5, ease: 'power3.out' }
+      )
+    }
+  })
+}
 </script>
 
 <template>
-  <main>
-    
+  <main class="flex justify-center items-center w-full h-screen">
+    <div @click="handleClickOutside" class="fixed z-0 w-full h-screen"></div>
+    <div v-if="showCard" class="px-10 rounded-lg min-h-[35rem] min-w-[30rem] bg-[#f4f3f4] relative border border-gray-200">
+      <div class="absolute h-[20rem] w-full">
+        <img src="@/assets/shoe1.png" class="w-full z-10 right-10 transition duration-200 cursor-pointer hover:scale-150 absolute" alt="">
+      </div>
+      <div class="absolute bottom-0 min-h-40 w-full bg-white py-10 left-0 px-10">
+        <h4 class="text-2xl font-medium">Nike Dunk Low Next Nature SE</h4>
+        <button @click="handleBuyNow" class="mt-4 bg-black w-full py-4 text-white rounded-lg text-xl font-medium">Buy now</button>
+      </div>
+    </div>
+
+    <div v-if="showSecondCard" class="flex w-full mx-56 bg-[#f4f3f4] relative border border-gray-200 shadow-xl second-card">
+      <div class="w-[70%] px-10 pt-10">
+        <div class="flex justify-between text-2xl font-medium">
+          <span>Nike Dunk Low Next Nature SE</span>
+          <span>$120</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <IconLeft @click="changeImage('left')" />
+          <img :src="images[currentImageIndex]" class="shoe-image" alt="">
+          <IconRight @click="changeImage('right')" />
+        </div>
+      </div>
+      <div class="w-[30%] relative">
+        <div class="absolute w-full h-full bg-white p-10">
+          <span class="text-xl font-medium">Colors</span>
+          <div class="flex gap-2 justify-start mt-5">
+            <div class="colors w-8 h-8 rounded-full bg-[#D571D5]"></div>
+            <div class="colors w-8 h-8 rounded-full bg-green-700"></div>
+            <div class="colors w-8 h-8 rounded-full bg-orange-600"></div>
+            <div class="colors w-8 h-8 rounded-full bg-red-700"></div>
+            <div class="colors w-8 h-8 rounded-full bg-black"></div>
+          </div>
+
+          <div class="mt-7">
+            <span class="text-xl font-medium">Select Size</span>
+            <div class="grid grid-cols-4 gap-4 flex-wrap mt-5">
+              <Input />
+              <Input />
+              <Input />
+              <Input />
+              <Input />
+              <Input />
+              <Input />
+              <Input />
+            </div>
+            <div class="flex items-center justify-between mt-7">
+              <span class="text-xl font-medium ">Avis</span>
+              <div class="flex gap-2">
+                <IconStars />
+                <IconStars />
+                <IconStars />
+                <IconStarsTransparent />
+              </div>
+            </div>
+            <div class="mt-7">
+              <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+                <h4 class="text-xl font-medium">Details</h4>
+                <IconDown @click="showDetails = !showDetails"/>
+              </div>
+              <transition>
+                <p v-if="showDetails" class="text-lg text-gray-600 mt-5 transition">
+                  Combine style and comfort with this Nike shoe.
+                  Modern and high-performance, perfect for sports and everyday wear.
+                </p>
+              </transition>
+              <button class="mt-7 bg-black w-full py-4 text-white rounded-lg text-xl font-medium">Add to card</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
+
+<style scoped>
+.icon-rotate:hover {
+  transform: rotate(360deg);
+  transition: .3s ease-in-out;
+}
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
