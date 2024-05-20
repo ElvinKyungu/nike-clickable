@@ -13,13 +13,18 @@ import shoe2 from '@/assets/shoe2.png'
 import shoe3 from '@/assets/shoe3.png'
 import shoe4 from '@/assets/shoe4.png'
 
-const images = [shoe1, shoe2, shoe3, shoe4]
-
+const shoes = [
+  { image: shoe1, title: 'Nike Dunk Low Next Nature SE', price: '$120' },
+  { image: shoe2, title: 'Nike Air Max 97', price: '$150' },
+  { image: shoe3, title: 'Nike Air Force 1', price: '$110' },
+  { image: shoe4, title: 'Nike Blazer Mid', price: '$130' }
+]
 
 const showDetails = ref(false)
 const showCard = ref(true)
 const showSecondCard = ref(false)
 const currentImageIndex = ref(0)
+const currentShoe = ref(shoes[0])
 
 const handleBuyNow = () => {
   showCard.value = false
@@ -54,7 +59,7 @@ watch(showSecondCard, (newVal) => {
 })
 
 const changeImage = (direction: 'left' | 'right') => {
-  const totalImages = images.length
+  const totalImages = shoes.length
   const nextIndex = direction === 'right'
     ? (currentImageIndex.value + 1) % totalImages
     : (currentImageIndex.value - 1 + totalImages) % totalImages
@@ -66,22 +71,44 @@ const changeImage = (direction: 'left' | 'right') => {
     ease: 'power3.in',
     onComplete: () => {
       currentImageIndex.value = nextIndex
+      currentShoe.value = shoes[nextIndex]
       gsap.fromTo(
         '.shoe-image',
         { x: direction === 'right' ? '100%' : '-100%', opacity: 0 },
         { x: '0%', opacity: 1, duration: 0.5, ease: 'power3.out' }
       )
+      animateText()
     }
   })
 }
+const animateText = () => {
+  gsap.to(
+    ['.shoe-title', '.shoe-price'],
+    { 
+      y: 0, opacity: 1, 
+      duration: 1, 
+      ease: 'power4.out', 
+      stagger: 0.2, 
+      startAt: { 
+        y: '50%', 
+        opacity: 0 
+      } 
+    }
+  )
+}
+
+
+watch(currentShoe, () => {
+  animateText()
+})
 </script>
 
 <template>
   <main class="flex justify-center items-center w-full h-screen">
-    <div @click="handleClickOutside" class="fixed z-0 w-full h-screen"></div>
+    <div v-if="showSecondCard" @click="handleClickOutside" class="fixed z-0 w-full h-screen cursor-pointer"></div>
     <div v-if="showCard" class="px-10 rounded-lg min-h-[35rem] min-w-[30rem] bg-[#f4f3f4] relative border border-gray-200">
       <div class="absolute h-[20rem] w-full">
-        <img src="@/assets/shoe1.png" class="w-full z-10 right-10 transition duration-200 cursor-pointer hover:scale-150 absolute" alt="">
+        <img src="@/assets/shoe1.png" class="w-full h-full object-contain z-10 right-10 transition duration-200 cursor-pointer hover:scale-150 absolute" alt="">
       </div>
       <div class="absolute bottom-0 min-h-40 w-full bg-white py-10 left-0 px-10">
         <h4 class="text-2xl font-medium">Nike Dunk Low Next Nature SE</h4>
@@ -89,19 +116,19 @@ const changeImage = (direction: 'left' | 'right') => {
       </div>
     </div>
 
-    <div v-if="showSecondCard" class="flex w-full mx-56 bg-[#f4f3f4] relative border border-gray-200 shadow-xl second-card">
-      <div class="w-[70%] px-10 pt-10">
-        <div class="flex justify-between text-2xl font-medium">
-          <span>Nike Dunk Low Next Nature SE</span>
-          <span>$120</span>
+    <div v-if="showSecondCard" class="flex w-full h-[80vh] mx-56 bg-[#f4f3f4] relative border border-gray-200 shadow-xl second-card">
+      <div class="w-[65%] px-10 pt-10 flex flex-col justify-center relative">
+        <div class="flex justify-between text-2xl font-medium absolute top-10 pr-20 w-full">
+          <span class="shoe-title">{{ currentShoe.title }}</span>
+          <span class="shoe-price">{{ currentShoe.price }}</span>
         </div>
         <div class="flex justify-between items-center">
           <IconLeft @click="changeImage('left')" />
-          <img :src="images[currentImageIndex]" class="shoe-image" alt="">
+          <img :src="currentShoe.image" class="shoe-image w-[90%] h-[80vh] object-contain" alt="">
           <IconRight @click="changeImage('right')" />
         </div>
       </div>
-      <div class="w-[30%] relative">
+      <div class="w-[35%] relative">
         <div class="absolute w-full h-full bg-white p-10">
           <span class="text-xl font-medium">Colors</span>
           <div class="flex gap-2 justify-start mt-5">
@@ -136,7 +163,7 @@ const changeImage = (direction: 'left' | 'right') => {
             <div class="mt-7">
               <div class="flex justify-between items-center border-b border-gray-200 pb-4">
                 <h4 class="text-xl font-medium">Details</h4>
-                <IconDown @click="showDetails = !showDetails"/>
+                <IconDown @click="showDetails = !showDetails" />
               </div>
               <transition>
                 <p v-if="showDetails" class="text-lg text-gray-600 mt-5 transition">
@@ -144,7 +171,7 @@ const changeImage = (direction: 'left' | 'right') => {
                   Modern and high-performance, perfect for sports and everyday wear.
                 </p>
               </transition>
-              <button class="mt-7 bg-black w-full py-4 text-white rounded-lg text-xl font-medium">Add to card</button>
+              <button class="mt-7 bg-black w-full py-4 text-white rounded-lg text-xl font-medium">Add to cart</button>
             </div>
           </div>
         </div>
@@ -166,5 +193,10 @@ const changeImage = (direction: 'left' | 'right') => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.shoe-title, .shoe-price {
+  display: inline-block;
+  transition: transform 0.5s, opacity 0.5s;
 }
 </style>
