@@ -108,16 +108,16 @@ const changeImage = (direction: 'left' | 'right') => {
     </div>
 
     <div v-if="showSecondCard" class="flex flex-col md:flex-row w-full h-auto md:h-[80vh] mx-4 md:mx-56 bg-[#f4f3f4] relative border border-gray-200 shadow-xl second-card">
-      <div class="w-full h-full md:w-[65%] px-4 md:px-10 pt-10 flex flex-col justify-center relative">
+      <div class="w-full relative h-full md:w-[65%] px-4 md:px-10 pt-10 flex flex-col justify-center">
         <div class="flex justify-between text-xl md:text-2xl font-medium absolute top-10 pr-4 md:pr-20 w-full">
           <span class="shoe-title">{{ currentShoe.title }}</span>
           <span class="shoe-price">{{ currentShoe.price }}</span>
           <span @click="handleClickOutside" class="bg-black/10 font-light cursor-pointer h-10 flex justify-center w-10 rounded-full">x</span>
         </div>
-        <div class="flex justify-between items-center">
-          <IconLeft @click="changeImage('left')" />
+        <div class="flex w-full justify-between items-center">
+          <IconLeft class="w-[10%]" @click="changeImage('left')" />
           <img :src="currentShoe.image" class="shoe-image w-full md:w-[90%] h-[50vh] md:h-[80vh] object-contain" alt="">
-          <IconRight @click="changeImage('right')" />
+          <IconRight class="w-[10%]" @click="changeImage('right')" />
         </div>
       </div>
       <div class="w-full h-full bg-white md:w-[35%] relative mt-4 md:mt-0">
